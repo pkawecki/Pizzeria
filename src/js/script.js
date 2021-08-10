@@ -85,17 +85,19 @@
       const thisProduct = this;
       
       //find the clickable trigger
-      const clickableTrigger = thisProduct.element.querySelector("i"); //querySelector('fa-chevron-down');
-      //console.log(clickableTrigger);
+      const clickableTrigger = thisProduct.element.querySelector('i'); //querySelector('fa-chevron-down');
+      console.log(clickableTrigger);
 
       //START: add event listener to clickable trigger on event click
-      clickableTrigger.addEventListener("click", function(event){
+      clickableTrigger.addEventListener('click', function(event){
         // prevent default action
         event.preventDefault();
 
+        // console.log('click');
+
         // find active product (the one that has active class)
-        let activeProduct = document.querySelector("article.active");
-        
+        let activeProduct = document.querySelector('article.active');
+        console.log(activeProduct);
         
         //if there is active product and it's not thisProduct.element, remove active class
         if (activeProduct!=null && activeProduct!=thisProduct.element) {
@@ -103,7 +105,7 @@
         }
 
         //toggle active class on thiProduct.element
-        thisProduct.element.classList.toggle('active');
+        // thisProduct.element.classList.toggle('active');
 
         thisProduct.element.classList.toggle(classNames.menuProduct.wrapperActive);
       });
