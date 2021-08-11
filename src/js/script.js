@@ -59,10 +59,104 @@
       this.id = id;
       this.data = data;
       thisProduct.renderInMenu();
+      thisProduct.getElements();
       thisProduct.initAccordion();
 
-      console.log('new Product: ',thisProduct);
+      thisProduct.initOrderForm();
+      
+      
+      ;
     }
+
+    initOrderForm() {
+      const thisProduct = this;
+      console.log(this.initOrderForm.name);
+      thisProduct.form.addEventListener('submit', function(event){
+        event.preventDefault();
+        thisProduct.processOrder();
+        // console.log('click');
+      });
+      
+      for(let input of thisProduct.formInputs){
+        input.addEventListener('change', function(){
+          thisProduct.processOrder();
+          // console.log('click');
+        });
+
+       
+      }
+      
+      thisProduct.cartButton.addEventListener('click', function(event){
+        event.preventDefault();
+        thisProduct.processOrder();
+        // console.log('click');
+      });
+    
+    }
+
+    processOrder() {
+      const thisProduct = this;
+    
+      // covert form to object structure e.g. { sauce: ['tomato'], toppings: ['olives', 'redPeppers']}
+      const formData = utils.serializeFormToObject(thisProduct.form);
+      console.log('formData', formData);
+    
+      // set price to default price
+      let price = thisProduct.data.price;
+
+      // console.log('olive including: ',formData.toppings.includes('olives'));
+    
+    
+      // for every category (param)...
+      for(let paramId in thisProduct.data.params) {
+        // determine param value, e.g. paramId = 'toppings', param = { label: 'Toppings', type: 'checkboxes'... }
+        const param = thisProduct.data.params[paramId];
+        console.log(paramId, param);
+    
+        // for every option in this category
+        for(let optionId in param.options) {
+          
+          // determine option value, e.g. optionId = 'olives', option = { label: 'Olives', price: 2, default: true }
+          const option = param.options[optionId];
+          //increase price
+
+
+         console.log('paramId: ',paramId);
+         console.log('param: ',param);
+         
+         console.log('optionId: ',optionId);
+         console.log('option: ',option);
+
+         console.log(formData[paramId].includes(optionId));
+         if (formData[paramId].includes(optionId)) {
+           if (option.default) {
+             //leave the preice same
+           }
+           else {
+            price += option.price;
+           }
+         }
+         else {
+           if(option.default) {
+             price -= option.price;
+           }
+           else {
+             //leave price the same
+           }
+         }
+
+
+          //decrease price
+
+          //remain the same price
+          console.log(optionId, option);
+        }
+      }
+    
+      // update calculated price in the HTML
+      thisProduct.priceElem.innerHTML = price;
+    }
+
      
     renderInMenu(){
       const thisProduct = this;
@@ -81,15 +175,29 @@
       menuContainer.appendChild(thisProduct.element);
     }  
 
+    getElements() {
+      const thisProduct = this;
+
+      thisProduct.accordionTrigger = thisProduct.element.querySelector(select.menuProduct.clickable);
+      thisProduct.form = thisProduct.element.querySelector(select.menuProduct.form);
+      thisProduct.formInputs = thisProduct.form.querySelectorAll(select.all.formInputs);
+      thisProduct.cartButton = thisProduct.element.querySelector(select.menuProduct.cartButton);
+      thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem);
+
+    }
+
     initAccordion() {
       const thisProduct = this;
       
-      //find the clickable trigger
-      const clickableTrigger = thisProduct.element.querySelector('i'); //querySelector('fa-chevron-down');
-      console.log(clickableTrigger);
+      //find the clickable trigger - deprecatted
+      //useing new variable declared in thisProduct.accordionTrigger
+      // const clickableTrigger = thisProduct.element.querySelector('i'); //querySelector('fa-chevron-down');
+  
 
+      
       //START: add event listener to clickable trigger on event click
-      clickableTrigger.addEventListener('click', function(event){
+      thisProduct.accordionTrigger.addEventListener('click', function(event){
+
         // prevent default action
         event.preventDefault();
 
