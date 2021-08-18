@@ -1,0 +1,193 @@
+[33mcommit bb754406697f8904a5678cb6cf1c004b7c3f17ed[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: Przemek Kawecki <przemek.kawecki@gmail.com>
+Date:   Wed Aug 18 13:09:34 2021 +0200
+
+    add to cart functionality created
+
+[1mdiff --git a/src/index.html b/src/index.html[m
+[1mindex 51708fb..07eaf8a 100644[m
+[1m--- a/src/index.html[m
+[1m+++ b/src/index.html[m
+[36m@@ -72,8 +72,9 @@[m
+         <ul class="cart__product-details no-spacing">[m
+           {{#each params}}[m
+             <li>[m
+[32m+[m[32m              <!-- <span>some param here</span> -->[m
+               <span class="cart__product-details-label">{{ label }}</span>[m
+[31m-              <span>{{#joinValues options}}, {{/joinValues}}</span>[m
+[32m+[m[32m            <span>{{#each options}} {{this}} {{/each}}</span>[m
+             </li>[m
+           {{/each}}[m
+         </ul>[m
+[1mdiff --git a/src/js/data.js b/src/js/data.js[m
+[1mindex 444007c..ba58b78 100644[m
+[1m--- a/src/js/data.js[m
+[1m+++ b/src/js/data.js[m
+[36m@@ -111,5 +111,4 @@[m [mdataSource.products = {[m
+       },[m
+     },[m
+   },[m
+[31m-[m
+ };[m
+[1mdiff --git a/src/js/script.js b/src/js/script.js[m
+[1mindex 5ff41da..ee61882 100644[m
+[1m--- a/src/js/script.js[m
+[1m+++ b/src/js/script.js[m
+[36m@@ -101,6 +101,77 @@[m
+       thisProduct.initAmountWidget();[m
+ [m
+       thisProduct.processOrder();[m
+[32m+[m
+[32m+[m[32m      thisProduct.prepareCartProduct();[m
+[32m+[m[32m    }[m
+[32m+[m[32m    addToCart() {[m
+[32m+[m[32m      const thisProduct = this;[m
+[32m+[m
+[32m+[m[32m      app.cart.add(thisProduct.prepareCartProduct());[m
+[32m+[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    prepareCartProduct() {[m
+[32m+[m[32m      const thisProduct = this;[m
+[32m+[m
+[32m+[m[32m      const productSummary = {};[m
+[32m+[m
+[32m+[m[32m      productSummary.id = thisProduct.id;[m
+[32m+[m[32m      productSummary.name = thisProduct.data.name;[m
+[32m+[m[32m      productSummary.amount = thisProduct.amountWidget.value;[m
+[32m+[m[32m      productSummary.priceSingle = thisProduct.priceSingle;[m
+[32m+[m[32m      productSummary.price = thisProduct.priceSingle * productSummary.amount;[m
+[32m+[m
+[32m+[m[32m      productSummary.params = thisProduct.prepareCartProductParams();[m
+[32m+[m
+[32m+[m[32m      // console.log('thisProduct.productSummary: ',productSummary);[m
+[32m+[m[32m      console.log('thisProduct: ',thisProduct);[m
+[32m+[m[32m      console.log(productSummary.params);[m
+[32m+[m[32m      return productSummary;[m[41m      [m
+[32m+[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    prepareCartProductParams() {[m
+[32m+[m
+[32m+[m[41m      [m
+[32m+[m[32m      const thisProduct = this;[m
+[32m+[m[41m    [m
+[32m+[m[32m      // covert form to object structure e.g. { sauce: ['tomato'], toppings: ['olives', 'redPeppers']}[m
+[32m+[m[32m      const formData = utils.serializeFormToObject(thisProduct.form);[m
+[32m+[m[41m     [m
+[32m+[m[32m      //CODE ADDED, new object defined[m
+[32m+[m[32m      const params = {};[m
+[32m+[m
+[32m+[m[32m      // for every category (param)...[m
+[32m+[m[32m      for(let paramId in thisProduct.data.params) {[m
+[32m+[m[32m        // determine param value, e.g. paramId = 'toppings', param = { label: 'Toppings', type: 'checkboxes'... }[m
+[32m+[m[32m        const param = thisProduct.data.params[paramId];[m
+[32m+[m[41m        [m
+[32m+[m[32m        //create param subobject in params object[m
+[32m+[m[32m        params[paramId] = {[m
+[32m+[m[32m          label: param.label,[m
+[32m+[m[32m          options : {}[m
+[32m+[m[32m        };[m
+[32m+[m[41m    [m
+[32m+[m[32m        // for every option in this category[m
+[32m+[m[32m        for(let optionId in param.options) {[m
+[32m+[m[41m          [m
+[32m+[m[32m          // determine option value, e.g. optionId = 'olives', option = { label: 'Olives', price: 2, default: true }[m
+[32m+[m[32m          const option = param.options[optionId];[m
+[32m+[m[41m          [m
+[32m+[m[32m          //check if formData contains optionId[m
+[32m+[m[32m          const optionSelected = formData[paramId] && formData[paramId].includes(optionId);[m
+[32m+[m
+[32m+[m[32m          //check whether the option selected exist and if so create key-value pair in params[m
+[32m+[m[32m          if(optionSelected) {[m
+[32m+[m[32m            params[paramId].options[optionId] = option.label;[m
+[32m+[m[32m          }[m
+[32m+[m[32m        }[m
+[32m+[m[41m        [m
+[32m+[m[32m      }[m[41m [m
+[32m+[m[32m      console.log('params: ', params);[m
+[32m+[m[32m      //make prepareCartProductParams return params object[m
+[32m+[m[32m      return params;[m
+     }[m
+ [m
+     initOrderForm() {[m
+[36m@@ -125,7 +196,7 @@[m
+       thisProduct.cartButton.addEventListener('click', function(event){[m
+         event.preventDefault();[m
+         thisProduct.processOrder();[m
+[31m-        [m
+[32m+[m[32m        thisProduct.cartButton.addEventListener('click', thisProduct.addToCart());[m
+       });[m
+     }[m
+ [m
+[36m@@ -197,6 +268,9 @@[m
+           }[m
+         }[m
+       } [m
+[32m+[m[32m      thisProduct.priceSingle = price;[m
+[32m+[m[32m      // console.log(thisProduct.priceSingle);[m
+[32m+[m
+       price *= thisProduct.amountWidget.input.value;[m
+       [m
+       // update calculated price in the HTML[m
+[36m@@ -245,7 +319,7 @@[m
+ [m
+       [m
+       thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);[m
+[31m-      thisProduct.amountWidgetElem.addEventListener('updated', function(event){console.log('event: ',event); thisProduct.processOrder();});[m
+[32m+[m[32m      thisProduct.amountWidgetElem.addEventListener('updated', function(){ thisProduct.processOrder();});[m
+       [m
+     }[m
+ [m
+[36m@@ -321,7 +395,7 @@[m
+     }[m
+ [m
+     initActions(thisWidget){[m
+[31m-      thisWidget.input.addEventListener('change', function() {thisWidget.setValue(thisWidget.input.value) ; console.log(thisWidget.input.value);}); //this.setValue(this.input)[m
+[32m+[m[32m      thisWidget.input.addEventListener('change', function() {thisWidget.setValue(thisWidget.input.value) ; }); //this.setValue(this.input)[m
+       thisWidget.linkIncrease.addEventListener('click', function(){thisWidget.setValue(parseInt(thisWidget.input.value)+1);});[m
+       thisWidget.linkDecrease.addEventListener('click',  function(){thisWidget.setValue(parseInt(thisWidget.input.value)-1);});[m
+     }[m
+[36m@@ -330,7 +404,7 @@[m
+       const thisWidget = this;[m
+ [m
+       const event = new Event('updated');[m
+[31m-      console.log(event);[m
+[32m+[m[41m      [m
+       thisWidget.element.dispatchEvent(event);[m
+       [m
+ [m
+[36m@@ -339,31 +413,65 @@[m
+ [m
+   class Cart {[m
+     constructor(element) {[m
+[32m+[m[32m      //assign new name for instance[m
+       const thisCart = this;[m
+ [m
+[32m+[m[32m      //create new object for all the products[m
+       thisCart.products = [];[m
+ [m
+[32m+[m[32m      //get all necessary elements for constructor[m
+       thisCart.getElements(element);[m
+ [m
+[31m-      console.log('new Cart', thisCart);[m
+[32m+[m[32m      // log the contenf of cart[m
+[32m+[m[32m      // console.log('new Cart', thisCart);[m
+ [m
+[32m+[m[32m      //init event listener[m
+       this.initActions();[m
+     }[m
+ [m
+[32m+[m[32m    add(menuProduct) {[m
+[32m+[m[32m      const thisCart = this;[m
+[32m+[m[41m      [m
+[32m+[m[32m      thisCart.products.push(menuProduct);[m
+[32m+[m
+[32m+[m[32m      // console.log('adding product (cart.add() method working', menuProduct);[m
+[32m+[m[32m      console.log('(Cart)cart.addthisCart.products: ', thisCart.products);[m
+[32m+[m
+[32m+[m[41m     [m
+[32m+[m[32m      //generate HTML based on template[m[41m [m
+[32m+[m[32m      const generatedHTML = templates.cartProduct(menuProduct);[m
+[32m+[m
+[32m+[m[32m      //create element using utils.cre

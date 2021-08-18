@@ -125,8 +125,8 @@
       productSummary.params = thisProduct.prepareCartProductParams();
 
       // console.log('thisProduct.productSummary: ',productSummary);
-      console.log('thisProduct: ',thisProduct);
-      console.log(productSummary.params);
+      console.log('prepareCartProduct.thisProduct: ',thisProduct);
+
       return productSummary;      
 
     }
@@ -169,7 +169,7 @@
         }
         
       } 
-      console.log('params: ', params);
+     
       //make prepareCartProductParams return params object
       return params;
     }
@@ -269,7 +269,6 @@
         }
       } 
       thisProduct.priceSingle = price;
-      // console.log(thisProduct.priceSingle);
 
       price *= thisProduct.amountWidget.input.value;
       
@@ -350,6 +349,8 @@
 
   class AmountWidget {
     constructor(element) {
+
+      console.log('AmountWIdget element: ', element);
       const thisWidget = this;
 
       thisWidget.getElements(element);
@@ -366,6 +367,8 @@
       this.linkDecrease = thisWidget.element.querySelector(select.widgets.amount.linkDecrease);
       this.linkIncrease = thisWidget.element.querySelector(select.widgets.amount.linkIncrease);
       this.value = thisWidget.input.value; //to check
+
+      console.log('event listeners aded');
       
     }
 
@@ -406,6 +409,7 @@
       const event = new Event('updated');
       
       thisWidget.element.dispatchEvent(event);
+      console.log('thisWidget.element', thisWidget.element);
       
 
     }
@@ -432,30 +436,29 @@
     add(menuProduct) {
       const thisCart = this;
       
-      thisCart.products.push(menuProduct);
-
-      // console.log('adding product (cart.add() method working', menuProduct);
-      console.log('(Cart)cart.addthisCart.products: ', thisCart.products);
-
-     
       //generate HTML based on template 
       const generatedHTML = templates.cartProduct(menuProduct);
-
+      
       //create element using utils.createElementFromHTML
       let generatedDOM = utils.createDOMFromHTML(generatedHTML);
-
-      console.log('generated HTML from Handlebars: ',generatedHTML);
       
+
+      //push the product into thisCart.products array
+      thisCart.products.push(new CartProduct(menuProduct, generatedDOM));
 
       //append DOM object to cart
       thisCart.dom.productList.appendChild(generatedDOM);
+
+      // console.log('adding product (cart.add() method working', menuProduct);
+      console.log('(Cart)cart.add.thisCart.products - after pushing: ', thisCart.products);
+      
     }
     initActions() {
       //assign new name for instance
       const thisCart = this;
 
       //add event listener to cart wrapper
-      thisCart.dom.wrapper.addEventListener('click', function() {thisCart.dom.wrapper.classList.toggle('active');});
+      thisCart.dom.toggleTrigger.addEventListener('click', function() {thisCart.dom.wrapper.classList.toggle('active');});
     }
 
     getElements(element) {
@@ -475,6 +478,72 @@
       thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(select.cart.toggleTrigger);
       
     }
+  }
+
+  class CartProduct {
+    constructor(menuProduct, element) {
+      //assign new name for instance
+      const thisCartProduct = this;
+
+      console.log('menuProduct: ', menuProduct);
+      console.log('element: ', element);
+      
+      thisCartProduct.amount = menuProduct.amount;
+      thisCartProduct.id = menuProduct.id;
+      thisCartProduct.name = menuProduct.name;
+      thisCartProduct.price = menuProduct.price;
+      thisCartProduct.priceSingle = menuProduct.priceSingle;
+      thisCartProduct.params = menuProduct.params;
+      
+      
+      //run getElements() method
+      thisCartProduct.getElements(element);
+
+      //run eventListener start-up and instatiate AmountWidget in Cart wrapper
+      thisCartProduct.initCartAmountWidget();
+    }
+    
+    //for DOM elements only! - morronic approach beyond belief, but what can I do?
+    getElements(element) {
+
+      const thisCartProduct = this;
+      
+      thisCartProduct.dom ={};
+      thisCartProduct.dom.wrapper = element;
+
+      thisCartProduct.dom.amountWidget = thisCartProduct.dom.wrapper;
+      thisCartProduct.amountWidget = thisCartProduct.dom.wrapper.querySelector(select.cartProduct.amountWidget);
+      
+      thisCartProduct.dom.price = thisCartProduct.dom.wrapper.querySelector(select.cartProduct.price);
+      thisCartProduct.dom.edit = thisCartProduct.dom.wrapper.querySelector(select.cartProduct.edit);
+      thisCartProduct.dom.remove = thisCartProduct.dom.wrapper.querySelector(select.cartProduct.remove);
+
+    }
+
+    //create a increase/decrease amount functionality in cart
+    initCartAmountWidget() {
+      //assign new name to Cart Product instance
+      const thisCartProduct = this;
+
+      thisCartProduct.amountWidget = new AmountWidget(thisCartProduct.dom.amountWidget);
+      thisCartProduct.amountWidget.setValue(thisCartProduct.amount);
+
+      thisCartProduct.price = thisCartProduct.amount * this.priceSingle;
+
+      console.log('thisCartProduct.amountWidget', thisCartProduct.amountWidget);
+      console.log('thisCartProduct.dom.amountWidget', thisCartProduct.dom.amountWidget);
+      thisCartProduct.dom.amountWidget.addEventListener('updated',console.log('event listener works!') );
+      
+    }
+      
+  
+    updatedHandler() {
+      //log workign condition
+      console.log('amount:', this.amount);
+      console.log('price:', this.price);
+      console.log('handler works'); 
+
+   }
   }
 
   const app = {
