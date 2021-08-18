@@ -72,8 +72,9 @@
         <ul class="cart__product-details no-spacing">
           {{#each params}}
             <li>
+              <!-- <span>some param here</span> -->
               <span class="cart__product-details-label">{{ label }}</span>
-              <span>{{#joinValues options}}, {{/joinValues}}</span>
+            <span>{{#each options}} {{this}} {{/each}}</span>
             </li>
           {{/each}}
         </ul>

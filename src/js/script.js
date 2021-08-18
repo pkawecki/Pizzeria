@@ -101,6 +101,77 @@
       thisProduct.initAmountWidget();
 
       thisProduct.processOrder();
+
+      thisProduct.prepareCartProduct();
+    }
+    addToCart() {
+      const thisProduct = this;
+
+      app.cart.add(thisProduct.prepareCartProduct());
+
+    }
+
+    prepareCartProduct() {
+      const thisProduct = this;
+
+      const productSummary = {};
+
+      productSummary.id = thisProduct.id;
+      productSummary.name = thisProduct.data.name;
+      productSummary.amount = thisProduct.amountWidget.value;
+      productSummary.priceSingle = thisProduct.priceSingle;
+      productSummary.price = thisProduct.priceSingle * productSummary.amount;
+
+      productSummary.params = thisProduct.prepareCartProductParams();
+
+      // console.log('thisProduct.productSummary: ',productSummary);
+      console.log('thisProduct: ',thisProduct);
+      console.log(productSummary.params);
+      return productSummary;      
+
+    }
+
+    prepareCartProductParams() {
+
+      
+      const thisProduct = this;
+    
+      // covert form to object structure e.g. { sauce: ['tomato'], toppings: ['olives', 'redPeppers']}
+      const formData = utils.serializeFormToObject(thisProduct.form);
+     
+      //CODE ADDED, new object defined
+      const params = {};
+
+      // for every category (param)...
+      for(let paramId in thisProduct.data.params) {
+        // determine param value, e.g. paramId = 'toppings', param = { label: 'Toppings', type: 'checkboxes'... }
+        const param = thisProduct.data.params[paramId];
+        
+        //create param subobject in params object
+        params[paramId] = {
+          label: param.label,
+          options : {}
+        };
+    
+        // for every option in this category
+        for(let optionId in param.options) {
+          
+          // determine option value, e.g. optionId = 'olives', option = { label: 'Olives', price: 2, default: true }
+          const option = param.options[optionId];
+          
+          //check if formData contains optionId
+          const optionSelected = formData[paramId] && formData[paramId].includes(optionId);
+
+          //check whether the option selected exist and if so create key-value pair in params
+          if(optionSelected) {
+            params[paramId].options[optionId] = option.label;
+          }
+        }
+        
+      } 
+      console.log('params: ', params);
+      //make prepareCartProductParams return params object
+      return params;
     }
 
     initOrderForm() {
@@ -125,7 +196,7 @@
       thisProduct.cartButton.addEventListener('click', function(event){
         event.preventDefault();
         thisProduct.processOrder();
-        
+        thisProduct.cartButton.addEventListener('click', thisProduct.addToCart());
       });
     }
 
@@ -197,6 +268,9 @@
           }
         }
       } 
+      thisProduct.priceSingle = price;
+      // console.log(thisProduct.priceSingle);
+
       price *= thisProduct.amountWidget.input.value;
       
       // update calculated price in the HTML
@@ -245,7 +319,7 @@
 
       
       thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);
-      thisProduct.amountWidgetElem.addEventListener('updated', function(event){console.log('event: ',event); thisProduct.processOrder();});
+      thisProduct.amountWidgetElem.addEventListener('updated', function(){ thisProduct.processOrder();});
       
     }
 
@@ -321,7 +395,7 @@
     }
 
     initActions(thisWidget){
-      thisWidget.input.addEventListener('change', function() {thisWidget.setValue(thisWidget.input.value) ; console.log(thisWidget.input.value);}); //this.setValue(this.input)
+      thisWidget.input.addEventListener('change', function() {thisWidget.setValue(thisWidget.input.value) ; }); //this.setValue(this.input)
       thisWidget.linkIncrease.addEventListener('click', function(){thisWidget.setValue(parseInt(thisWidget.input.value)+1);});
       thisWidget.linkDecrease.addEventListener('click',  function(){thisWidget.setValue(parseInt(thisWidget.input.value)-1);});
     }
@@ -330,7 +404,7 @@
       const thisWidget = this;
 
       const event = new Event('updated');
-      console.log(event);
+      
       thisWidget.element.dispatchEvent(event);
       
 
@@ -339,31 +413,65 @@
 
   class Cart {
     constructor(element) {
+      //assign new name for instance
       const thisCart = this;
 
+      //create new object for all the products
       thisCart.products = [];
 
+      //get all necessary elements for constructor
       thisCart.getElements(element);
 
-      console.log('new Cart', thisCart);
+      // log the contenf of cart
+      // console.log('new Cart', thisCart);
 
+      //init event listener
       this.initActions();
     }
 
+    add(menuProduct) {
+      const thisCart = this;
+      
+      thisCart.products.push(menuProduct);
+
+      // console.log('adding product (cart.add() method working', menuProduct);
+      console.log('(Cart)cart.addthisCart.products: ', thisCart.products);
+
+     
+      //generate HTML based on template 
+      const generatedHTML = templates.cartProduct(menuProduct);
+
+      //create element using utils.createElementFromHTML
+      let generatedDOM = utils.createDOMFromHTML(generatedHTML);
+
+      console.log('generated HTML from Handlebars: ',generatedHTML);
+      
+
+      //append DOM object to cart
+      thisCart.dom.productList.appendChild(generatedDOM);
+    }
     initActions() {
+      //assign new name for instance
       const thisCart = this;
 
-      thisCart.dom.wrapper.addEventListener('click', function() {thisCart.dom.wrapper.classList.toggle('active')});
+      //add event listener to cart wrapper
+      thisCart.dom.wrapper.addEventListener('click', function() {thisCart.dom.wrapper.classList.toggle('active');});
     }
 
     getElements(element) {
+      //assign new name for instance
       const thisCart = this;
 
+      //create new subobject in thisCart for all the dom objects
       thisCart.dom = {};
 
+      //create and assign reference to dom.wrapper
       thisCart.dom.wrapper = element;
 
-      //toggling div
+      thisCart.dom.productList = document.querySelector(select.cart.productList);
+      console.log('thisCart.dom.productList:', thisCart.dom.productList);
+
+      //toggling cart wrapper visibility
       thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(select.cart.toggleTrigger);
       
     }
