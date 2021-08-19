@@ -350,7 +350,6 @@
   class AmountWidget {
     constructor(element) {
 
-      console.log('AmountWIdget element: ', element);
       const thisWidget = this;
 
       thisWidget.getElements(element);
@@ -367,8 +366,6 @@
       this.linkDecrease = thisWidget.element.querySelector(select.widgets.amount.linkDecrease);
       this.linkIncrease = thisWidget.element.querySelector(select.widgets.amount.linkIncrease);
       this.value = thisWidget.input.value; //to check
-
-      console.log('event listeners aded');
       
     }
 
@@ -406,12 +403,12 @@
     announce() {
       const thisWidget = this;
 
-      const event = new Event('updated');
+      const event = new CustomEvent('updated', {
+        bubbles: true
+      });
       
       thisWidget.element.dispatchEvent(event);
-      console.log('thisWidget.element', thisWidget.element);
-      
-
+  
     }
   }
 
@@ -452,6 +449,8 @@
       // console.log('adding product (cart.add() method working', menuProduct);
       console.log('(Cart)cart.add.thisCart.products - after pushing: ', thisCart.products);
       
+      //run update prices
+      thisCart.update();
     }
     initActions() {
       //assign new name for instance
@@ -459,7 +458,37 @@
 
       //add event listener to cart wrapper
       thisCart.dom.toggleTrigger.addEventListener('click', function() {thisCart.dom.wrapper.classList.toggle('active');});
+
+      //
+      thisCart.dom.productList.addEventListener('updated', function() {
+        // console.log('Listener at productList in Cart instance is working');
+        thisCart.update();
+      });
+
+      //assign remove listener to productList
+      thisCart.dom.productList.addEventListener('remove', function() {console.log('event detalis: ',event); thisCart.remove(event.detail.cartProduct);});
+      
     }
+
+    remove(detail) {
+      const thisCart = this;
+      
+      console.log('detail caught in thisCart.remove(): ',detail);
+
+      console.log('thisCart.dom.productList: ', thisCart.dom.productList);
+      console.log('thisCart.products: ', thisCart.products);
+
+      //obtain index
+      let index = thisCart.products.indexOf(detail);
+      
+      //remove from dom object (html content) 
+      thisCart.dom.productList.children[index].remove();
+
+      //remove from product list
+      thisCart.products.splice(index, 1);
+    }
+
+
 
     getElements(element) {
       //assign new name for instance
@@ -470,13 +499,51 @@
 
       //create and assign reference to dom.wrapper
       thisCart.dom.wrapper = element;
-
+      
+      //product list container
       thisCart.dom.productList = document.querySelector(select.cart.productList);
-      console.log('thisCart.dom.productList:', thisCart.dom.productList);
 
       //toggling cart wrapper visibility
       thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(select.cart.toggleTrigger);
+
+      //cart numerals 
+      thisCart.dom.deliveryFee = thisCart.dom.wrapper.querySelector(select.cart.deliveryFee);
+
+      thisCart.dom.subtotalPrice = thisCart.dom.wrapper.querySelector(select.cart.subtotalPrice);
+
+      thisCart.dom.totalPrice = thisCart.dom.wrapper.querySelectorAll(select.cart.totalPrice);
+      console.log('thisCart.dom.totalPrice ', thisCart.dom.totalPrice);
+    }
+
+    update() {
+      const thisCart = this;
+
+      //acquire default delivery fee
+      const deliveryFee = settings.cart.defaultDeliveryFee;
+
+      //declare constants
+      let totalNumber = 0, subtotalPrice =0;
+
+      //loop through all products
+      for (let product of thisCart.products) {
+        console.log('loop works');
+        totalNumber += product.amount;
+        subtotalPrice += product.price;
+      }
+      if (subtotalPrice != 0) {
+        thisCart.totalPrice = subtotalPrice + deliveryFee;
+
+      }
       
+      //update html fields
+      thisCart.dom.deliveryFee.innerHTML = deliveryFee;
+      thisCart.dom.subtotalPrice.innerHTML = subtotalPrice;
+
+      //loop through places where totalPrice is displayed
+      for (let elelemt of thisCart.dom.totalPrice) {
+        elelemt.innerHTML = thisCart.totalPrice; 
+      }
+      console.log(totalNumber);
     }
   }
 
@@ -485,8 +552,8 @@
       //assign new name for instance
       const thisCartProduct = this;
 
-      console.log('menuProduct: ', menuProduct);
-      console.log('element: ', element);
+      // console.log('menuProduct: ', menuProduct);
+      // console.log('element: ', element);
       
       thisCartProduct.amount = menuProduct.amount;
       thisCartProduct.id = menuProduct.id;
@@ -501,6 +568,18 @@
 
       //run eventListener start-up and instatiate AmountWidget in Cart wrapper
       thisCartProduct.initCartAmountWidget();
+
+      //activate initActions method - assign event listeners to EDIT and REMOVE buttons
+      thisCartProduct.initActions();
+    }
+
+    initActions() {
+
+      const thisCartProduct = this;
+
+      //assign event listeneres to REMOVE and EDIT buttons
+      this.dom.edit.addEventListener('click', function() {console.log('edited')});
+      this.dom.remove.addEventListener('click', function() {console.log('removed'); thisCartProduct.remove();});
     }
     
     //for DOM elements only! - morronic approach beyond belief, but what can I do?
@@ -515,35 +594,60 @@
       thisCartProduct.amountWidget = thisCartProduct.dom.wrapper.querySelector(select.cartProduct.amountWidget);
       
       thisCartProduct.dom.price = thisCartProduct.dom.wrapper.querySelector(select.cartProduct.price);
+      
+      //get remove and edit dom objects
       thisCartProduct.dom.edit = thisCartProduct.dom.wrapper.querySelector(select.cartProduct.edit);
       thisCartProduct.dom.remove = thisCartProduct.dom.wrapper.querySelector(select.cartProduct.remove);
 
+      // console.log('thisCartProduct.dom.edit: ', thisCartProduct.dom.edit);
+      // console.log('thisCartProduct.dom.remove: ', thisCartProduct.dom.remove);
+      
     }
 
     //create a increase/decrease amount functionality in cart
     initCartAmountWidget() {
+      
       //assign new name to Cart Product instance
       const thisCartProduct = this;
 
+      //create new AmountWidget instance
       thisCartProduct.amountWidget = new AmountWidget(thisCartProduct.dom.amountWidget);
+
+      //corrent the initial value in, above created, AmountWidget instance.
       thisCartProduct.amountWidget.setValue(thisCartProduct.amount);
-
-      thisCartProduct.price = thisCartProduct.amount * this.priceSingle;
-
-      console.log('thisCartProduct.amountWidget', thisCartProduct.amountWidget);
-      console.log('thisCartProduct.dom.amountWidget', thisCartProduct.dom.amountWidget);
-      thisCartProduct.dom.amountWidget.addEventListener('updated',console.log('event listener works!') );
       
+      //assign event listener to amount widget
+      thisCartProduct.dom.amountWidget.addEventListener('updated',function() {thisCartProduct.updatedHandler();});
     }
       
-  
+    //run it when eventListenerTriggered
     updatedHandler() {
-      //log workign condition
-      console.log('amount:', this.amount);
-      console.log('price:', this.price);
-      console.log('handler works'); 
 
-   }
+      const thisCartProduct = this;
+      
+      //update thisCartProduct instance values
+      thisCartProduct.amount = thisCartProduct.amountWidget.value;
+      thisCartProduct.price = thisCartProduct.priceSingle * thisCartProduct.amountWidget.value ;
+
+      //set price in Cart amount widget
+      thisCartProduct.dom.price.innerHTML = thisCartProduct.price;
+    }
+
+    remove() {
+      const thisCartProduct = this;
+
+      const event = new CustomEvent('remove', {
+        bubbles : true,
+        detail : {
+          cartProduct : thisCartProduct,
+        },
+      });
+
+      thisCartProduct.dom.wrapper.dispatchEvent(event);
+      console.log('remove event sent');
+    }
+
+    
   }
 
   const app = {
