@@ -79,6 +79,11 @@
     },
     // CODE ADDED END
 
+    db: {
+      url: '//localhost:3131',
+      products: 'products',
+      orders: 'orders',
+    }
   };
 
   const templates = {
@@ -202,7 +207,7 @@
 
     processOrder() {
       const thisProduct = this;
-    
+      
       // covert form to object structure e.g. { sauce: ['tomato'], toppings: ['olives', 'redPeppers']}
       const formData = utils.serializeFormToObject(thisProduct.form);
      
@@ -578,7 +583,7 @@
       const thisCartProduct = this;
 
       //assign event listeneres to REMOVE and EDIT buttons
-      this.dom.edit.addEventListener('click', function() {console.log('edited')});
+      this.dom.edit.addEventListener('click', function() {console.log('edited');});
       this.dom.remove.addEventListener('click', function() {console.log('removed'); thisCartProduct.remove();});
     }
     
@@ -680,7 +685,17 @@
       const thisApp = this;
 
       //initialize new object "data" in app object
-      thisApp.data = dataSource;
+      thisApp.data = {};//dataSource};
+
+      const url = settings.db.url + '/' + settings.db.products;
+      
+      fetch(url)
+        .then(function(rawResponse){
+          return rawResponse.json();
+        })
+
+        console.log('fetch: ', fetch(url));
+        fetch(url);
     },
 
     //initializing function. It uses initData subfunction to create data object and init menu 
