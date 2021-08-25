@@ -456,6 +456,8 @@
       
       //run update prices
       thisCart.update();
+
+      console.log('thisCart: ', thisCart);
     }
     initActions() {
       //assign new name for instance
@@ -471,9 +473,62 @@
       });
 
       //assign remove listener to productList
-      thisCart.dom.productList.addEventListener('remove', function() {console.log('event detalis: ',event); thisCart.remove(event.detail.cartProduct);});
+      thisCart.dom.productList.addEventListener('remove', function() {
+        console.log('event detalis: ',event); 
+        thisCart.remove(event.detail.cartProduct);
+        thisCart.update();
+      });
+      
+      //assign eventListener to submit button
+      thisCart.dom.form.addEventListener('submit', function() {
+        event.preventDefault();
+        console.log('submit worked');
+        thisCart.sendOrder();
+      })
+    }
+
+    sendOrder() {
+      const thisCart = this;
+
+      const url = settings.db.url + '/' + settings.db.orders;
+
+      console.log(thisCart.address.value);
+      
+      const payload = {
+        address: thisCart.address.value,
+        phone: thisCart.phone.value,
+        totalPrice: thisCart.totalPrice,
+        subtotalPrice: thisCart.dom.subtotalPrice.innerHTML,
+        totalNumber: thisCart.dom.totalNumber,
+        deliveryFee: thisCart.dom.deliveryFee.innerHTML,
+        products: [],
+      }
+
+      console.log('thisCart.products: ',thisCart.products)
+      for(let prod of thisCart.products) {
+
+        payload.products.push(prod.getData());
+      }
+      const options = {
+        method: 'POST',
+        body : payload,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      }
+      fetch(url,options)
+      .then(function(response){
+        return response.json();
+      }).then(function(parsedResponse){
+        console.log('parsedResponse: ', parsedResponse);
+      })
+
+      console.log('payload: ', payload);
+
       
     }
+
 
     remove(detail) {
       const thisCart = this;
@@ -491,6 +546,9 @@
 
       //remove from product list
       thisCart.products.splice(index, 1);
+
+      //update Cart
+      thisCart.update();
     }
 
 
@@ -513,18 +571,36 @@
 
       //cart numerals 
       thisCart.dom.deliveryFee = thisCart.dom.wrapper.querySelector(select.cart.deliveryFee);
-
       thisCart.dom.subtotalPrice = thisCart.dom.wrapper.querySelector(select.cart.subtotalPrice);
 
+      //thisCart total price
       thisCart.dom.totalPrice = thisCart.dom.wrapper.querySelectorAll(select.cart.totalPrice);
       console.log('thisCart.dom.totalPrice ', thisCart.dom.totalPrice);
+
+      //thisCart form dom element
+      thisCart.dom.form = thisCart.dom.wrapper.querySelector(select.cart.form);
+      console.log(thisCart.dom.form);
+
+      //sendOrder method payload data
+      thisCart.address = thisCart.dom.form.elements.address;
+      thisCart.phone = thisCart.dom.form.elements.phone;
+
+
+      console.log('elements:', thisCart.dom.form.elements);
+      console.log('elements.address:', thisCart.address);
+      console.log('elements.address.value:', thisCart.address.value);
+
+      console.log('elements:', thisCart.dom.form.elements);
+      console.log('elements.phone:', thisCart.phone);
+      console.log('elements.phone.value:', thisCart.phone.value);
+
     }
 
     update() {
       const thisCart = this;
 
       //acquire default delivery fee
-      const deliveryFee = settings.cart.defaultDeliveryFee;
+      let deliveryFee = settings.cart.defaultDeliveryFee;
 
       //declare constants
       let totalNumber = 0, subtotalPrice =0;
@@ -539,6 +615,12 @@
         thisCart.totalPrice = subtotalPrice + deliveryFee;
 
       }
+
+      else {
+        deliveryFee = 0;
+        subtotalPrice = 0;
+        thisCart.totalPrice = 0;
+      }
       
       //update html fields
       thisCart.dom.deliveryFee.innerHTML = deliveryFee;
@@ -547,8 +629,12 @@
       //loop through places where totalPrice is displayed
       for (let elelemt of thisCart.dom.totalPrice) {
         elelemt.innerHTML = thisCart.totalPrice; 
+      
       }
-      console.log(totalNumber);
+
+      //update totalNumber 
+      // console.log('totalNumber: ', totalNumber);
+      thisCart.dom.totalNumber = totalNumber;
     }
   }
 
@@ -576,6 +662,8 @@
 
       //activate initActions method - assign event listeners to EDIT and REMOVE buttons
       thisCartProduct.initActions();
+
+      
     }
 
     initActions() {
@@ -587,7 +675,27 @@
       this.dom.remove.addEventListener('click', function() {console.log('removed'); thisCartProduct.remove();});
     }
     
-    //for DOM elements only! - morronic approach beyond belief, but what can I do?
+    getData() {
+      // id, amount, price, priceSingle, name i params
+      const thisCartProduct = this;
+
+      
+
+      const productOrderData = {
+        amount : thisCartProduct.amount,
+        id: thisCartProduct.id,
+        name : thisCartProduct.name,
+        price : thisCartProduct.price,
+        priceSingle : thisCartProduct.priceSingle,
+        params : thisCartProduct.params,
+      }
+      
+      console.log('productOrderData: ',productOrderData);
+      return productOrderData;
+    }
+
+
+    //for DOM elements only, non-DOM elements getter placed in constructor! - approach really morronic beyond belief, but what a man can do againt such a reckless stupidity?
     getElements(element) {
 
       const thisCartProduct = this;
@@ -674,7 +782,7 @@
       for(let productData in thisApp.data.products) { 
 
         //create Product class instance for every product object in data.products
-        new Product(productData, thisApp.data.products[productData]);
+        new Product(thisApp.data.products[productData].id, thisApp.data.products[productData]);
       }
     },
 
@@ -689,13 +797,21 @@
 
       const url = settings.db.url + '/' + settings.db.products;
       
+      console.log(url);
+
       fetch(url)
         .then(function(rawResponse){
           return rawResponse.json();
         })
+        .then(function(parsedResponse){
+          console.log('parsedResponse: ',parsedResponse);
 
-        console.log('fetch: ', fetch(url));
-        fetch(url);
+          //save parsedResponse as thisApp.data.products
+          thisApp.data.products = parsedResponse;
+
+          //execute initmenu Method -- probably done later
+          thisApp.initMenu();
+        });
     },
 
     //initializing function. It uses initData subfunction to create data object and init menu 
@@ -708,7 +824,7 @@
       // console.log('settings:', settings);
       // console.log('templates:', templates);
       thisApp.initData();
-      thisApp.initMenu();
+      // thisApp.initMenu();
       thisApp.initCart();
     },
   };
