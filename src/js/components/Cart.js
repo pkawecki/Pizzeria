@@ -14,14 +14,12 @@ class Cart {
     thisCart.getElements(element);
 
     // log the contenf of cart
-    // console.log('new Cart', thisCart);
-
+    // 
     //init event listener
     this.initActions();
   }
 
   add(menuProduct) {
-    console.log('menuProduct: ', menuProduct);
     const thisCart = this;
       
     //generate HTML based on template 
@@ -37,13 +35,9 @@ class Cart {
     //append DOM object to cart
     thisCart.dom.productList.appendChild(generatedDOM);
 
-    // console.log('adding product (cart.add() method working', menuProduct);
-    console.log('(Cart)cart.add.thisCart.products - after pushing: ', thisCart.products);
-      
     //run update prices
     thisCart.update();
 
-    console.log('thisCart: ', thisCart);
   }
   initActions() {
     //assign new name for instance
@@ -54,13 +48,11 @@ class Cart {
 
     //
     thisCart.dom.productList.addEventListener('updated', function() {
-      // console.log('Listener at productList in Cart instance is working');
-      thisCart.update();
+      //       thisCart.update();
     });
 
     //assign remove listener to productList
     thisCart.dom.productList.addEventListener('remove', function() {
-      console.log('event detalis: ',event); 
       thisCart.remove(event.detail.cartProduct);
       thisCart.update();
     });
@@ -68,7 +60,6 @@ class Cart {
     //assign eventListener to submit button
     thisCart.dom.form.addEventListener('submit', function() {
       event.preventDefault();
-      console.log('submit worked');
       thisCart.sendOrder();
     });
   }
@@ -78,8 +69,7 @@ class Cart {
 
     const url = settings.db.url + '/' + settings.db.orders;
 
-    console.log(thisCart.address.value);
-      
+          
     const payload = {
       address: thisCart.address.value,
       phone: thisCart.phone.value,
@@ -90,7 +80,6 @@ class Cart {
       products: [],
     };
 
-    console.log('thisCart.products: ',thisCart.products);
     for(let prod of thisCart.products) {
 
       payload.products.push(prod.getData());
@@ -107,11 +96,10 @@ class Cart {
       .then(function(response){
         return response.json();
       }).then(function(parsedResponse){
-        console.log('parsedResponse: ', parsedResponse);
+        console.log('parsedResponse: ',parsedResponse);
       });
 
-    console.log('payload: ', payload);
-
+    
       
   }
 
@@ -119,11 +107,8 @@ class Cart {
   remove(detail) {
     const thisCart = this;
       
-    console.log('detail caught in thisCart.remove(): ',detail);
-
-    console.log('thisCart.dom.productList: ', thisCart.dom.productList);
-    console.log('thisCart.products: ', thisCart.products);
-
+    
+        
     //obtain index
     let index = thisCart.products.indexOf(detail);
       
@@ -161,25 +146,17 @@ class Cart {
 
     //thisCart total price
     thisCart.dom.totalPrice = thisCart.dom.wrapper.querySelectorAll(select.cart.totalPrice);
-    // console.log('thisCart.dom.totalPrice ', thisCart.dom.totalPrice);
-
+    // 
     //thisCart form dom element
     thisCart.dom.form = thisCart.dom.wrapper.querySelector(select.cart.form);
-    // console.log(thisCart.dom.form);
-
+    // 
     //sendOrder method payload data
     thisCart.address = thisCart.dom.form.elements.address;
     thisCart.phone = thisCart.dom.form.elements.phone;
 
 
-    // console.log('elements:', thisCart.dom.form.elements);
-    // console.log('elements.address:', thisCart.address);
-    // console.log('elements.address.value:', thisCart.address.value);
-
-    // console.log('elements:', thisCart.dom.form.elements);
-    // console.log('elements.phone:', thisCart.phone);
-    // console.log('elements.phone.value:', thisCart.phone.value);
-
+    //     //     // 
+    //     //     // 
   }
 
   update() {
@@ -189,12 +166,11 @@ class Cart {
     let deliveryFee = settings.cart.defaultDeliveryFee;
 
     //declare constants
-    let totalNumber = 0, subtotalPrice =0;
+    let subtotalPrice = 0;
 
     //loop through all products
     for (let product of thisCart.products) {
-      // console.log('loop works');
-      totalNumber += product.amount;
+      //       totalNumber += product.amount;
       subtotalPrice += product.price;
     }
     if (subtotalPrice != 0) {
@@ -219,8 +195,7 @@ class Cart {
     }
 
     //update totalNumber 
-    // console.log('totalNumber: ', totalNumber);
-    thisCart.dom.totalNumber = totalNumber;
+    //     thisCart.dom.totalNumber = totalNumber;
   }
 }
 
