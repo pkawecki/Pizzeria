@@ -3,6 +3,21 @@ import Product from './components/Product.js';
 import Cart from './components/Cart.js';
 
 const app = {
+
+  initPages: function(){
+    const thisApp  = this;
+
+    thisApp.pages = document.querySelector(select.containerOf.pages).children;
+
+    thisApp.activatePage(thisApp.pages[0].id);
+
+
+
+
+  },
+
+
+
   initCart: function() {
     const thisApp = this;
 
@@ -13,12 +28,12 @@ const app = {
     //... will make an easy way of cart data management
     thisApp.cart = new Cart(cartElem);
 
-    console.log('thisApp:',thisApp);
+    // console.log('thisApp:',thisApp);
     thisApp.productList = document.querySelector(select.containerOf.menu);
 
 
     thisApp.productList.addEventListener('add-to-cart',function(event) {
-      console.log('event.detail.product:', event.detail.product);
+      // console.log('event.detail.product:', event.detail.product);
       app.cart.add(event.detail.product);
     });
   },
@@ -45,7 +60,7 @@ const app = {
 
     const url = settings.db.url + '/' + settings.db.products;
       
-    console.log(url);
+    // console.log(url);
 
     fetch(url)
       .then(function(rawResponse){
@@ -74,6 +89,7 @@ const app = {
     thisApp.initData();
     thisApp.initMenu();
     thisApp.initCart();
+    thisApp.initPages();
   },
 };
 
