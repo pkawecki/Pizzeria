@@ -47,9 +47,6 @@ class Product{
 
     productSummary.params = thisProduct.prepareCartProductParams();
 
-    // console.log('thisProduct.productSummary: ',productSummary);
-    console.log('prepareCartProduct.thisProduct: ',thisProduct);
-
     return productSummary;      
 
   }

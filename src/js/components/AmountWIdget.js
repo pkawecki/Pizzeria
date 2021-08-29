@@ -44,6 +44,7 @@ class AmountWidget {
       thisWidget.value = newValue;
       thisWidget.input.value = thisWidget.value;
     }
+  
     thisWidget.announce();
       
   }
