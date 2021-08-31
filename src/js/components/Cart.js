@@ -48,7 +48,11 @@ class Cart {
 
     //catch updated event
     thisCart.dom.productList.addEventListener('updated', function() {
+<<<<<<< HEAD
       thisCart.update();
+=======
+            thisCart.update();
+>>>>>>> ef31d17aaf4bc2f0ce79ac86b1dd1b13a2c993df
     });
 
     //assign remove listener to productList

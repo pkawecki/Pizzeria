@@ -16,7 +16,11 @@ const app = {
     
 
     const idFromHash = window.location.hash.replace('#/', '');
+<<<<<<< HEAD
     // console.log('idFromHash', idFromHash);
+=======
+    console.log('idFromHash', idFromHash);
+>>>>>>> ef31d17aaf4bc2f0ce79ac86b1dd1b13a2c993df
 
     let pageMatchingHash = thisApp.pages[0].id;
 
@@ -44,7 +48,11 @@ const app = {
 
         //change URL hash
         window.location.hash = '#/'+ id;
+<<<<<<< HEAD
       });
+=======
+      })
+>>>>>>> ef31d17aaf4bc2f0ce79ac86b1dd1b13a2c993df
     }
   },
 
@@ -127,10 +135,16 @@ const app = {
   initBooking : function() {
 
     const bookingElement = document.querySelector(select.containerOf.booking);
+<<<<<<< HEAD
     // console.log(bookingElement);
 
     const thisBooking = new Booking(bookingElement);
     console.log('thisBooking initiated but never used', thisBooking);
+=======
+    console.log(bookingElement);
+
+    const thsiBooking = new Booking(bookingElement);
+>>>>>>> ef31d17aaf4bc2f0ce79ac86b1dd1b13a2c993df
   },
 
   //initializing function. It uses initData subfunction to create data object and init menu 
