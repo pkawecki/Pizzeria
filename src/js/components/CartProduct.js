@@ -1,5 +1,5 @@
 import {select} from '../settings.js';
-import AmountWidget from './AmountWIdget.js';
+import AmountWidget from './AmountWidget.js';
 
 
 class CartProduct {
@@ -90,7 +90,7 @@ class CartProduct {
     //create new AmountWidget instance
     thisCartProduct.amountWidget = new AmountWidget(thisCartProduct.dom.amountWidget);
 
-    //corrent the initial value in, above created, AmountWidget instance.
+    //corrent the initial value in above created, AmountWidget instance.
     thisCartProduct.amountWidget.setValue(thisCartProduct.amount);
       
     //assign event listener to amount widget

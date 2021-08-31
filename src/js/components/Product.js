@@ -1,6 +1,6 @@
 import {select, templates, classNames} from '../settings.js';
 import { utils } from '../utils.js';
-import AmountWidget from './AmountWIdget.js';
+import AmountWidget from './AmountWidget.js';
 
 
 class Product{
@@ -46,9 +46,6 @@ class Product{
     productSummary.price = thisProduct.priceSingle * productSummary.amount;
 
     productSummary.params = thisProduct.prepareCartProductParams();
-
-    // console.log('thisProduct.productSummary: ',productSummary);
-    console.log('prepareCartProduct.thisProduct: ',thisProduct);
 
     return productSummary;      
 
@@ -193,7 +190,8 @@ class Product{
     } 
     thisProduct.priceSingle = price;
 
-    price *= thisProduct.amountWidget.input.value;
+    
+    price *= this.amountWidget.value;
       
     // update calculated price in the HTML
     thisProduct.priceElem.innerHTML = price;

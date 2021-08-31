@@ -46,9 +46,9 @@ class Cart {
     //add event listener to cart wrapper
     thisCart.dom.toggleTrigger.addEventListener('click', function() {thisCart.dom.wrapper.classList.toggle('active');});
 
-    //
+    //catch updated event
     thisCart.dom.productList.addEventListener('updated', function() {
-      //       thisCart.update();
+      thisCart.update();
     });
 
     //assign remove listener to productList
@@ -193,7 +193,7 @@ class Cart {
       elelemt.innerHTML = thisCart.totalPrice; 
       
     }
-
+    console.log('thisCart.dom.subtotalPrice',thisCart.dom.subtotalPrice);
     //update totalNumber 
     //     thisCart.dom.totalNumber = totalNumber;
   }
