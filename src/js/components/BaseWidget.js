@@ -12,19 +12,20 @@ class BaseWidget {
   }
 
   set value(value) {
+    //assign this widget instance to local variable
     const thisWidget = this;
         
-    //console.log('setvalue');
     //parse whatevr input to value
     let newValue = this.parseValue(value);
     
     //check whether value is the same or not a number
     if(newValue != thisWidget.dom.input.value && this.isValid(newValue) ) {
-            
+       
       //in case both conditions are negative assign passed value to current one
       thisWidget.correctValue = newValue;
       thisWidget.renderValue();
     }
+    
     thisWidget.announce();
   }
 
@@ -39,7 +40,7 @@ class BaseWidget {
   }
 
   isValid(value){
-    return (!isNaN(value)); 
+    return true; 
   }
 
   renderValue() {

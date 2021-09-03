@@ -9,6 +9,7 @@ class DatePicker extends BaseWidget{
 
     thisWidget.dom.input = thisWidget.dom.wrapper.querySelector(select.widgets.datePicker.input);
     thisWidget.initPlugin();
+    thisWidget.value = thisWidget.dom.input.value;
   }
   initPlugin(){
     const thisWidget = this;
@@ -29,11 +30,26 @@ class DatePicker extends BaseWidget{
         }
       ],
       onChange: function(selectedDates, dateStr) {
-        thisWidget.value = dateStr;
+        thisWidget.correctValue = dateStr;
+        thisWidget.announce();
       },
     });
   }
+
+  set value(value) {
+    
+    //assign this widget instance to local variable
+    const thisWidget = this;
+      
+    thisWidget.correctValue = value;
+    // thisWidget.renderValue();
+    
+    thisWidget.announce();
+    
+  }
+
   parseValue(value){
+    console.log('good return');
     return value;
   }
 

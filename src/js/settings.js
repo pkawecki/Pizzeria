@@ -67,6 +67,9 @@ export const select = {
     peopleAmount: '.people-amount',
     hoursAmount: '.hours-amount',
     tables: '.floor-plan .table',
+    floorPlan: '.floor-plan',
+    bookingForm: '.booking-form',
+    orderConfirmation : '.order-confirmation'
   },
 
   nav: {
@@ -128,8 +131,8 @@ export const settings = {
     url: '//localhost:3131',
     products: 'products',
     orders: 'orders', //possible refactoring needed to *order*
-    booking: 'booking', ////possible refactoring needed to *booking*
-    event: 'event',
+    booking: 'bookings', ////possible refactoring needed to *booking*
+    event: 'events',
     dateStartParamKey: 'date_gte',
     dateEndParamKey: 'date_lte',
     notRepeatParam: 'repeat=false',

@@ -26,31 +26,7 @@ class AmountWidget extends BaseWidget{
   renderValue() {
     const thisWidget = this;
     
-<<<<<<< HEAD
     thisWidget.dom.input.value = thisWidget.value;
-=======
-    //parse whatevr input to value
-    let newValue = parseInt(value);
-
-    if (newValue > 9) {
-      newValue = 9;
-    }
-    if(newValue < 1) {
-      newValue = 1;
-    }
-
-
-    //check whether value is the same or not a number
-    if(newValue != thisWidget.input.value && !isNaN(newValue)) {
-        
-      //in case both conditions are negative assign passed value to current one
-      thisWidget.value = newValue;
-      thisWidget.input.value = thisWidget.value;
-    }
-  
-    thisWidget.announce();
-      
->>>>>>> ef31d17aaf4bc2f0ce79ac86b1dd1b13a2c993df
   }
 
   isValid(value){

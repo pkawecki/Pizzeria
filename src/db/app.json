@@ -2,7 +2,7 @@
    "events": [
       {
         "id": 1,
-        "date": "2021-01-01",
+        "date": "2021-09-14",
         "hour": "12:30",
         "table": 1,
         "repeat": false,
@@ -22,7 +22,7 @@
       },
       {
         "id": 3,
-        "date": "2021-01-01",
+        "date": "2021-09-04",
         "hour": "12:00",
         "table": 3,
         "repeat": "daily",
@@ -51,8 +51,22 @@
         "starters": ["lemonWater"]
       }
     ],
-"bookings": [],
+"bookings": [
+   {
+      "id": 1,
+      "date": "2021-09-14",
+      "hour": "18:00",
+      "table": 1,
+      "repeat": false,
+      "duration": 4,
+      "ppl": 3,
+      "starters": []
+      }
+      
+],
 "orders" :[],
+
+
 "products":[
       {
          "id":"cake",
