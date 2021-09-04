@@ -28,8 +28,33 @@ class Booking {
     const phoneElement = thisBooking.dom.orderConfirmation.querySelector(select.cart.phone);
     const addressElement = thisBooking.dom.orderConfirmation.querySelector(select.cart.address);
 
-    // let water = thisBooking.dom.checkboxes.item(0);
-    // let bread = thisBooking.dom.checkboxes.item(1);
+    //create starters object of elements
+    const startersObj = {
+      water : thisBooking.dom.checkboxes.item(0),
+      bread : thisBooking.dom.checkboxes.item(1),
+    }
+
+    // create empty starter array
+    let starterArr = [];
+
+    //LOOP through starter object to add event Listeners
+    for (let starterKey in startersObj)
+    {
+      startersObj[starterKey].addEventListener('click', function(event){
+        if( (event.target.getAttribute("value") == starterKey)
+            &&
+          event.target.getAttribute("name") == "starter") {
+            if(starterArr.includes(starterKey)){
+              starterArr.splice(starterArr.indexOf(starterKey));
+            }
+            else {
+              starterArr.push(starterKey);
+            }
+            console.log(starterArr);
+          }
+      });
+    }
+
 
     //listen for 'submit' button click
     thisBooking.dom.bookingForm.addEventListener('submit', function(){
@@ -43,7 +68,7 @@ class Booking {
         table : thisBooking.bookedTable,
         duration : thisBooking.hoursAmountWidget.value,
         ppl : thisBooking.peopleAmountWidget.value,
-        starters : [],
+        starters : starterArr,
         phone : phoneElement.value,
         address : addressElement.value,
       };

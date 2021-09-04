@@ -128,9 +128,9 @@ const app = {
 
     const homeElement= document.querySelector(select.containerOf.home);
 
-    const thisHome = new HomePage(homeElement);
+    //const thisHome = new HomePage(homeElement);
 
-    console.log(thisHome);
+    // console.log(thisHome);
   },
 
   initBooking : function() {
