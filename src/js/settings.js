@@ -7,7 +7,7 @@ export const select = {
   containerOf: {
     menu: '#product-list',
     cart: '#cart',
-
+    home : '.home-wrapper',
     pages: '#pages',
     booking: '.booking-wrapper',
   },

@@ -124,6 +124,15 @@ const app = {
       });
   },
 
+  initHome : function() {
+
+    const homeElement= document.querySelector(select.containerOf.home);
+
+    const thisHome = new HomePage(homeElement);
+
+    console.log(thisHome);
+  },
+
   initBooking : function() {
 
     const bookingElement = document.querySelector(select.containerOf.booking);
@@ -132,6 +141,7 @@ const app = {
     const thisBooking = new Booking(bookingElement);
     console.log('thisBooking initiated but never used', thisBooking);
   },
+
 
   //initializing function. It uses initData subfunction to create data object and init menu 
   //to create products
@@ -147,6 +157,8 @@ const app = {
     thisApp.initCart();
     thisApp.initPages();
     thisApp.initBooking();
+
+    thisApp.initHome();
   },
 };
 
