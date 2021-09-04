@@ -40,7 +40,7 @@ class BaseWidget {
   }
 
   isValid(value){
-    return true; 
+    return (!isNaN(value)); 
   }
 
   renderValue() {
