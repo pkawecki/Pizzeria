@@ -32,7 +32,7 @@ class Booking {
     const startersObj = {
       water : thisBooking.dom.checkboxes.item(0),
       bread : thisBooking.dom.checkboxes.item(1),
-    }
+    };
 
     // create empty starter array
     let starterArr = [];
@@ -41,17 +41,17 @@ class Booking {
     for (let starterKey in startersObj)
     {
       startersObj[starterKey].addEventListener('click', function(event){
-        if( (event.target.getAttribute("value") == starterKey)
+        if( (event.target.getAttribute('value') == starterKey)
             &&
-          event.target.getAttribute("name") == "starter") {
-            if(starterArr.includes(starterKey)){
-              starterArr.splice(starterArr.indexOf(starterKey));
-            }
-            else {
-              starterArr.push(starterKey);
-            }
-            console.log(starterArr);
+          event.target.getAttribute('name') == 'starter') {
+          if(starterArr.includes(starterKey)){
+            starterArr.splice(starterArr.indexOf(starterKey));
           }
+          else {
+            starterArr.push(starterKey);
+          }
+          console.log(starterArr);
+        }
       });
     }
 
