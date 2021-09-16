@@ -1,45 +1,38 @@
 .carousel {
-  //background: #222;
-  .flickity-page-dots {
-    bottom: 0px;
-  }
-
-  img {
-    width: 201px;
-  }
-
-  .description {
-    display: flex !important;
-    flex-direction: column;
-    flex-wrap: wrap;
-    margin-left: 40px;
-  }
-
-  h6 {
-    margin-bottom: 1.5rem;
-  }
-
-  .carousel-cell {
-    width: 100%;
-    height: 300px;
-    margin-right: 10px;
-    /* center images in cells with flexbox */
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    justify-content: left;
-  }
-
-  .carousel.is-fullscreen .carousel-cell {
-    height: 100%;
-  }
-
-  .carousel-cell-image {
-    display: block;
-    max-height: 100%;
-  }
-
-  .carousel.is-fullscreen .carousel-cell-image {
-    max-width: 100%;
-  }
+    //background: #222;
+    .flickity-page-dots {
+        bottom: 0px;
+    }
+    img {
+        width: 201px;
+    }
+    .description {
+        display: flex !important;
+        flex-direction: column;
+        flex-wrap: wrap;
+        margin-left: 40px;
+    }
+    h6 {
+        margin-bottom: 1.5rem;
+    }
+    .carousel-cell {
+        width: 100%;
+        height: 300px;
+        margin-right: 10px;
+        /* center images in cells with flexbox */
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: left;
+    }
+    .carousel.is-fullscreen .carousel-cell {
+        height: 100%;
+    }
+    .carousel-cell-image {
+        display: block;
+        max-height: 100%;
+    }
+    .carousel.is-fullscreen .carousel-cell-image {
+        max-width: 100%;
+    }
 }
